@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Reflection;
 
 namespace WindowsFiles
 {
@@ -33,19 +34,44 @@ namespace WindowsFiles
 
         };
 
-
-
+        ///<summary>GetDirectories is a member of the FileAccess class.
+        /// <para>Returns a string-array with Directories of the current location.</para>
+        /// <para>If am empty string is passed, will return array of directories of the executing binary.</para>
+        /// </summary>
         public string[] GetDirectories(string location)
         {
+
+            // If an empty string was passed return the current binaries directory.
+            if(String.IsNullOrEmpty(location))
+            {
+                string p = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                return  Directory.GetDirectories(p);
+            }
+
             string[] dirs = Directory.GetDirectories(location);
 
             return dirs;
             
         }
 
+
+        ///<summary>GetDirectories is a member of the FileAccess class.
+        /// <para>Returns a string-array with Directories of the current location.</para>
+        /// <para>If am empty string is passed, will return array of directories of the executing binary.</para>
+        /// </summary>
         public string[] GetDirectories(string location, Flag_Attributes[] ignore)
         {
-            string[] all_dirs = Directory.GetDirectories(location);
+            string[] all_dirs;// = Directory.GetDirectories(location);
+
+            if (String.IsNullOrEmpty(location))
+            {
+                all_dirs = Directory.GetDirectories(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            }else
+            {
+                all_dirs = Directory.GetDirectories(location);
+            }
+
             int length = all_dirs.Length;
             string[] dirs = new string[length - CountWithFlag(all_dirs, ignore)]; // Does this shit even work lol?
             int dirpos = 0;
@@ -76,7 +102,7 @@ namespace WindowsFiles
             for (int i = 0; i < length; i++)
             {
                 
-                if(fileattributes.HasFlag(flags[i])) { return true; }
+                if(fileattributes.HasFlag((FileAttributes)flags[i])) { return true; }
 
             }
 
@@ -94,7 +120,7 @@ namespace WindowsFiles
                 FileAttributes fileab = dirinfo.Attributes;
 
                 // If the file contains the FileAttribute flag count it.
-                if (fileab.HasFlag(flag)) { count++; }
+                if (fileab.HasFlag((FileAttributes)flag)) { count++; }
 
             }
 
@@ -119,7 +145,7 @@ namespace WindowsFiles
                 {
                     // Break because we don't wanna count the same folders multiple times. 
                     // This function counts folders WITH flags, not total flags!!
-                    if (fileab.HasFlag(flags[d])) { count++; break; }
+                    if (fileab.HasFlag((FileAttributes)flags[d])) { count++; break; }
 
 
                 }
@@ -133,7 +159,16 @@ namespace WindowsFiles
 
         public string[] GetDirectories(string location, Flag_Attributes ignore_flag)
         {
-            string[] all_dirs = Directory.GetDirectories(location);
+            string[] all_dirs;// = Directory.GetDirectories(location);
+
+            if (String.IsNullOrEmpty(location))
+            {
+                all_dirs = Directory.GetDirectories(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            }else
+            {
+                all_dirs = Directory.GetDirectories(location);
+            }
+
             int length = all_dirs.Length;
             int valid_folders = length - CountWithFlag(all_dirs, ignore_flag);
             string[] dirs = new string[valid_folders];
@@ -148,7 +183,7 @@ namespace WindowsFiles
                 // If it doesn't have any of those flags that we ignore.
                 // We will add it to the string to be returned,
                 // And then increase the integer that indexes that string.
-                if (!(fileab.HasFlag(ignore_flag))) { dirs[dirpos] = all_dirs[i]; dirpos++; }
+                if (!(fileab.HasFlag((FileAttributes)ignore_flag))) { dirs[dirpos] = all_dirs[i]; dirpos++; }
 
 
             }
