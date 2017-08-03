@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
-namespace Dupfinder
+namespace DBAccess
 {
-    class MySQL_DB
+    class MySQLAccess
     {
 
        // Server info::
@@ -18,7 +18,7 @@ namespace Dupfinder
  
 
         
-        private MySqlConnection GetConnection(string server, string database, string uid, string password)
+        public MySqlConnection GetConnection(string server, string database, string uid, string password)
         {
             
             string s_conn = "SERVER=" + server + ";" + "DATABASE=" +
@@ -30,7 +30,7 @@ namespace Dupfinder
             return conn;
         }
 
-        private MySqlConnection GetConnection()
+        public MySqlConnection GetConnection()
         {
             string s_conn = "SERVER=" + "10.106.169.40" + ";" + "DATABASE=" +
             "hashdb" + ";" + "UID=" + "outside" + ";" + "PASSWORD=" + "b36eWa" + ";";
@@ -42,13 +42,13 @@ namespace Dupfinder
 
         }
 
-        private void OpenConnection(MySqlConnection conn)
+        public void OpenConnection(MySqlConnection conn)
         {
             conn.Open();
 
         }
 
-        private void ExecQuery(string query, MySqlConnection conn)
+        public void ExecQuery(string query, MySqlConnection conn)
         {
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
