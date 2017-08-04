@@ -192,6 +192,76 @@ namespace WindowsFiles
 
         }
 
+
+        public string[] GetFiles(string path)
+        {
+
+            if (String.IsNullOrEmpty(path))
+            {
+                string p = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                return Directory.GetFiles(p);
+            }
+
+
+            string[] files = Directory.GetFiles(path);
+
+            return files;
+
+        }
+
+        public string[] GetFiles(string path, Flag_Attributes ignore)
+        {
+            string[] unfiltered_files = Directory.GetFiles(path);
+            int length = unfiltered_files.Length;
+            int flags = CountWithFlag(unfiltered_files, ignore);
+            int index = 0;
+            string[] files = new string[length - flags];
+
+            for (int i = 0; i < length; i++)
+            {
+                FileInfo finfo = new FileInfo(unfiltered_files[i]);
+                FileAttributes attrib = finfo.Attributes;
+
+                if (!(attrib.HasFlag((FileAttributes)ignore))){ files[index] = unfiltered_files[i]; index++; }
+
+
+            }
+
+
+
+
+
+
+            return files;
+
+        }
+
+        public string[] GetFiles(string path, Flag_Attributes[] ignore)
+        {
+            string[] unfiltered_files = Directory.GetFiles(path);
+            int length = unfiltered_files.Length;
+            int flags = CountWithFlag(unfiltered_files, ignore);
+            int index = 0;
+            string[] files = new string[length - flags];
+
+
+            for (int i = 0; i < length; i++)
+            {
+                FileInfo finfo = new FileInfo(unfiltered_files[i]);
+                FileAttributes attrib = finfo.Attributes;
+
+                if(!(HasAnyFlag(attrib, ignore))) { files[index] = unfiltered_files[i]; index++; }
+
+
+
+            }
+
+            return files;
+
+        }
+
+
     
         public bool ContainsSTR(string[] origin, string value)
         {
